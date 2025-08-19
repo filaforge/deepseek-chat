@@ -3,32 +3,21 @@
   "description": "Filament panel plugin providing a DeepSeek chat page with admin-manageable API key.",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.0",
-  "keywords": ["laravel", "filament", "deepseek", "ai", "chat", "panel-plugin"],
+  "version": "0.9.6",
+  "keywords": [
+    "Laravel",
+    "Filament",
+    "Platform"
+  ],
   "homepage": "https://github.com/filaforge/deepseek-chat",
   "authors": [
     {
-      "name": "Filaforge",
-      "email": "filaforger@gmail.com"
+      "name": "Filaforge"
     }
   ],
   "support": {
     "email": "filaforger@gmail.com",
-    "source": "https://github.com/filaforge/deepseek-chat",
-    "issues": "https://github.com/filaforge/deepseek-chat/issues"
-  },laforge/deepseek-chat",
-  "description": "Filament panel plugin providing a DeepSeek chat page with admin-manageable API key.",
-  "type": "library",
-  "license": "MIT",
-  "version": "0.9.0",
-  "keywords": ["Laravel", "Filament", "Platform"],
-  "homepage": "https://github.com/filaforge/deepseek-chat",
-  "authors": [
-    { "name": "Filaforge" }
-  ],
-  "support": {
-    "email": "filaforger@gmail.com",
-  "source": "https://github.com/filaforge/deepseek-chat"
+    "source": "https://github.com/filaforge/deepseek-chat"
   },
   "require": {
     "php": "^8.1",
