@@ -39,7 +39,17 @@ This plugin is built for the Filaforge Platform, but it works in any Filament v4
 composer require filaforge/deepseek-chat
 ```
 
-**That's it!** The package will automatically:
+### Publish & Migrate
+
+```bash
+# Publish provider groups (config, views, migrations)
+php artisan vendor:publish --provider="Filaforge\\DeepseekChat\\Providers\\DeepseekChatServiceProvider"
+
+# Run migrations
+php artisan migrate
+```
+
+The package will automatically:
 - Publish configuration files to `config/deepseek-chat.php`
 - Publish view files to `resources/views/vendor/deepseek-chat/`
 - Publish migration files to `database/migrations/`
@@ -143,11 +153,45 @@ composer update filaforge/deepseek-chat
 ---
 
 ## Troubleshooting
-- **Migrations are automatic** - no need to run `php artisan migrate` manually
-- **Assets are auto-published** - no need to run `php artisan vendor:publish` manually
-- **Optimization is automatic** - no need to run `php artisan optimize` manually
-- If you encounter any issues, the plugin logs all operations to Laravel's log files
-- Make sure you added the panel plugin in Step 2; otherwise pages won't be registered
+- Ensure config and migrations are published and up to date:
+```bash
+php artisan vendor:publish --provider="Filaforge\\DeepseekChat\\Providers\\DeepseekChatServiceProvider"
+php artisan migrate
+```
+- Clear caches after publishing or updating:
+```bash
+php artisan optimize:clear
+```
+- Verify pages registered (panel code includes the plugin):
+```php
+->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
+```
+- Check logs for errors:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+## Uninstall
+
+1) Remove the plugin from your panel provider:
+```php
+// remove ->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
+```
+2) Roll back plugin migrations (if desired):
+```bash
+php artisan migrate:rollback
+# or roll back specific published files if needed
+```
+3) Remove published assets (optional):
+```bash
+rm -f config/deepseek-chat.php
+rm -rf resources/views/vendor/deepseek-chat
+```
+4) Remove the package and clear caches:
+```bash
+composer remove filaforge/deepseek-chat
+php artisan optimize:clear
+```
 
 ---
 
