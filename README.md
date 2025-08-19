@@ -1,45 +1,28 @@
-## Filaforge DeepSeek Chat for Filament v4
+# Filaforge DeepSeek Chat
 
-[![Packagist Version](https://img.shields.io/packagist/v/filaforge/deepseek-chat.svg)](https://packagist.org/packages/filaforge/deepseek-chat)
-[![Downloads](https://img.shields.io/packagist/dt/filaforge/deepseek-chat.svg)](https://packagist.org/packages/filaforge/deepseek-chat)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
-[![PHP](https://img.shields.io/badge/PHP-^8.1-777bb4?logo=php)](https://www.php.net/)
-[![Laravel](https://img.shields.io/badge/Laravel-^12-ff2d20?logo=laravel)](https://laravel.com)
-[![Filament](https://img.shields.io/badge/Filament-^4-16a34a)](https://filamentphp.com)
+A powerful Filament plugin that integrates DeepSeek AI chat capabilities directly into your admin panel.
 
-DeepSeek Chat adds an AI chat page to your Filament panel. It supports per-user API keys (stored on the user), optional streaming responses, conversation history, and a clean out‑of‑the‑box UI.
+## Features
 
-This plugin is built for the Filaforge Platform, but it works in any Filament v4 app.
-
-![Screenshot](screenshot.png)
-
-### Highlights
-- Real-time AI chat interface (optional streaming)
-- Per-user API key management via a settings page
-- Conversation history stored in your database
-- Simple install, ships with config, views, and migrations
-- **Fully automatic installation** - no manual commands required
-- **Automatic asset publishing** - config, views, and migrations published automatically
-- **Automatic optimization** - runs `php artisan optimize` after installation
-
----
-
-## Requirements
-- PHP >= 8.1
-- Laravel 12 (illuminate/support ^12)
-- Filament ^4.0
-- guzzlehttp/guzzle ^7.8
-
----
+- **DeepSeek AI Integration**: Chat with advanced AI models powered by DeepSeek
+- **Conversation Management**: Save, organize, and continue chat conversations
+- **Customizable Settings**: Configure API keys, models, and chat parameters
+- **Real-time Chat**: Live chat experience with streaming responses
+- **Conversation History**: Keep track of all your AI conversations
+- **Export Conversations**: Save and share chat transcripts
+- **Role-based Access**: Configurable user permissions and access control
+- **Multi-model Support**: Switch between different DeepSeek models
+- **Context Awareness**: Maintain conversation context across sessions
 
 ## Installation
 
-### Step 1: Require the package
+### 1. Install via Composer
+
 ```bash
 composer require filaforge/deepseek-chat
 ```
 
-### Publish & Migrate
+### 2. Publish & Migrate
 
 ```bash
 # Publish provider groups (config, views, migrations)
@@ -49,151 +32,225 @@ php artisan vendor:publish --provider="Filaforge\\DeepseekChat\\Providers\\Deeps
 php artisan migrate
 ```
 
-The package will automatically:
-- Publish configuration files to `config/deepseek-chat.php`
-- Publish view files to `resources/views/vendor/deepseek-chat/`
-- Publish migration files to `database/migrations/`
-- Run database migrations to create required tables
-- Execute `php artisan optimize` to cache routes and config
+### 3. Register Plugin
 
-### Step 2: Register the plugin in your Filament panel (important)
-Add the panel plugin to your panel provider so the pages show in the sidebar.
+Add the plugin to your Filament panel provider:
 
-- File in this app: `app/Providers/Filament/AdminPanelProvider.php`
-- Method: `public function panel(Panel $panel): Panel`
-
-Insert the plugin registration (if not already present):
 ```php
-// app/Providers/Filament/AdminPanelProvider.php
+use Filament\Panel;
 
-// ...existing use statements...
-
-public function panel(\Filament\Panel $panel): \Filament\Panel
+public function panel(Panel $panel): Panel
 {
     return $panel
-        // ...other panel setup...
+        // ... other configuration
         ->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make());
 }
 ```
-Note: If your app has multiple panels, add the plugin to whichever panel should expose the chat.
 
----
+## Setup
 
-### Step 3: Start using the plugin!
-The plugin is now fully installed and ready to use. No additional setup required.
+### Configuration
 
----
+The plugin will automatically:
+- Publish configuration files to `config/deepseek-chat.php`
+- Publish view files to `resources/views/vendor/deepseek-chat/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
 
-## Configuration
-The package automatically publishes `config/deepseek-chat.php` with these options:
+### DeepSeek API Configuration
+
+Configure your DeepSeek API in the published config file:
 
 ```php
+// config/deepseek-chat.php
 return [
     'api_key' => env('DEEPSEEK_API_KEY'),
     'base_url' => env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com'),
-    'allow_roles' => [], // Empty = allow all authenticated users
-    'stream' => env('DEEPSEEK_STREAM', false),
+    'default_model' => env('DEEPSEEK_MODEL', 'deepseek-chat'),
+    'max_tokens' => env('DEEPSEEK_MAX_TOKENS', 4096),
+    'temperature' => env('DEEPSEEK_TEMPERATURE', 0.7),
+    'stream' => env('DEEPSEEK_STREAM', true),
     'timeout' => env('DEEPSEEK_TIMEOUT', 60),
 ];
 ```
 
-Common `.env` settings:
+### Environment Variables
+
+Add these to your `.env` file:
+
 ```env
-DEEPSEEK_API_KEY=your-key-here
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
 DEEPSEEK_BASE_URL=https://api.deepseek.com
-DEEPSEEK_STREAM=false
+DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_MAX_TOKENS=4096
+DEEPSEEK_TEMPERATURE=0.7
+DEEPSEEK_STREAM=true
 DEEPSEEK_TIMEOUT=60
 ```
 
-Restrict access by role (leave empty to allow all authenticated users):
-```php
-// config/deepseek-chat.php
-return [
-    // ...
-    'allow_roles' => ['admin', 'staff'],
-];
-```
+### Getting Your DeepSeek API Key
 
----
+1. Visit [DeepSeek Platform](https://platform.deepseek.com/)
+2. Create an account or sign in
+3. Navigate to API Keys section
+4. Generate a new API key
+5. Copy the key to your `.env` file
 
 ## Usage
-- Open "DeepSeek Chat" from your Filament navigation.
-- Go to "DeepSeek Settings" to set your personal API key (stored on the user). If you prefer, you can set a default in `.env` (see below) and users can override it.
-- Start chatting. Conversations are saved to the `deepseek_conversations` table.
 
----
+### Accessing DeepSeek Chat
 
-## Development & Testing
+1. Navigate to your Filament admin panel
+2. Look for the "DeepSeek Chat" menu item
+3. Start chatting with AI models
 
-### Running Tests
-```bash
-composer test
-```
+### Starting a Conversation
 
-### Running Tests with Coverage
-```bash
-composer test-coverage
-```
+1. **Select Model**: Choose from available DeepSeek models
+2. **Type Your Message**: Enter your question or prompt
+3. **Send Message**: Submit your message to the AI
+4. **View Response**: See the AI's response in real-time
+5. **Continue Chat**: Keep the conversation going
 
-### Installation Test
-```bash
-php install-test.php
-```
+### Managing Conversations
 
----
+1. **New Chat**: Start a fresh conversation
+2. **Save Chat**: Automatically save important conversations
+3. **Load Chat**: Resume previous conversations
+4. **Export Chat**: Download conversation transcripts
+5. **Delete Chat**: Remove unwanted conversations
 
-## Updates
+### Advanced Features
 
-```bash
-composer update filaforge/deepseek-chat
-```
-
-**Note:** All assets, migrations, and optimization are automatically handled during package installation and updates.
-
----
+- **Model Selection**: Switch between different DeepSeek models
+- **Parameter Tuning**: Adjust temperature, max tokens, and other settings
+- **Context Management**: Maintain conversation context across sessions
+- **Streaming Responses**: Real-time AI responses for better user experience
 
 ## Troubleshooting
-- Ensure config and migrations are published and up to date:
+
+### Common Issues
+
+- **API key errors**: Verify your DeepSeek API key is correct and has sufficient credits
+- **Rate limiting**: Check your DeepSeek API rate limits and usage
+- **Model not available**: Ensure the selected model is available in your plan
+- **Connection timeouts**: Check network connectivity and timeout settings
+
+### Debug Steps
+
+1. Check the plugin configuration:
 ```bash
-php artisan vendor:publish --provider="Filaforge\\DeepseekChat\\Providers\\DeepseekChatServiceProvider"
-php artisan migrate
+php artisan config:show deepseek-chat
 ```
-- Clear caches after publishing or updating:
+
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep deepseek-chat
+```
+
+3. Test API connectivity:
+```bash
+php artisan tinker
+# Test your API key manually
+```
+
+4. Check environment variables:
+```bash
+php artisan tinker
+echo env('DEEPSEEK_API_KEY');
+```
+
+5. Clear caches:
 ```bash
 php artisan optimize:clear
 ```
-- Verify pages registered (panel code includes the plugin):
-```php
-->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
-```
-- Check logs for errors:
+
+6. Check logs for errors:
 ```bash
 tail -f storage/logs/laravel.log
 ```
 
+### API Error Codes
+
+- **401 Unauthorized**: Invalid or expired API key
+- **429 Too Many Requests**: Rate limit exceeded
+- **500 Internal Server Error**: DeepSeek service issue
+- **Timeout**: Request took too long to complete
+
+## Security Considerations
+
+### Access Control
+
+- **Role-based permissions**: Restrict access to authorized users only
+- **API key security**: Never expose API keys in client-side code
+- **User isolation**: Ensure users can only access their own conversations
+- **Audit logging**: Track all chat activities and API usage
+
+### Best Practices
+
+- Use environment variables for API keys
+- Implement proper user authentication
+- Monitor API usage and costs
+- Regularly rotate API keys
+- Set appropriate rate limits
+
 ## Uninstall
 
-1) Remove the plugin from your panel provider:
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
 ```php
 // remove ->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
 ```
-2) Roll back plugin migrations (if desired):
+
+### 2. Roll Back Migrations (Optional)
+
 ```bash
 php artisan migrate:rollback
 # or roll back specific published files if needed
 ```
-3) Remove published assets (optional):
+
+### 3. Remove Published Assets (Optional)
+
 ```bash
 rm -f config/deepseek-chat.php
 rm -rf resources/views/vendor/deepseek-chat
 ```
-4) Remove the package and clear caches:
+
+### 4. Remove Package and Clear Caches
+
 ```bash
 composer remove filaforge/deepseek-chat
 php artisan optimize:clear
 ```
 
----
+### 5. Clean Up Environment Variables
+
+Remove these from your `.env` file:
+```env
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_MAX_TOKENS=4096
+DEEPSEEK_TEMPERATURE=0.7
+DEEPSEEK_STREAM=true
+DEEPSEEK_TIMEOUT=60
+```
+
+## Support
+
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/deepseek-chat)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/deepseek-chat/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/deepseek-chat/discussions)
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
-MIT. See LICENSE.md.
+
+This plugin is open-sourced software licensed under the [MIT license](LICENSE).
+
+---
+
+**Made with ❤️ by the Filaforge Team**
